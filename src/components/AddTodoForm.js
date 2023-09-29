@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addTodo } from '../Redux/todoReducer';
 
 const AddTodoForm = () => {
-	
+	const inputRef = useRef()
 	const dispatch = useDispatch()
 	const [value, setValue] = useState('');
  
@@ -21,6 +21,10 @@ const AddTodoForm = () => {
 		
 		
 	}; 
+	useEffect(() => {
+		inputRef.current.focus()
+
+	},[])
 
 	return (
 		<form onSubmit={onSubmit} className='form-inline mt-3 mb-3'>
@@ -30,6 +34,7 @@ const AddTodoForm = () => {
 				className='form-control mb-2 mr-sm-2'
 				placeholder='Add todo...'
 				value={value}
+				ref={inputRef}
 				onChange={(event) => setValue(event.target.value)}
 			></input>
 

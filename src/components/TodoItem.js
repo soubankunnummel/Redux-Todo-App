@@ -29,7 +29,7 @@ const TodoItem = ({ id, title, completed }) => {
     console.log("chek box clicked");
 	dispatch(ToggleCompleted(id))
 
-  }
+  } 
 
   useEffect(()=> {
 	if(editingTodoId !== null && inputRef.current){
