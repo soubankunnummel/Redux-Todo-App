@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const TotalCompleteItems = () => {
-	const todos = useSelector((state) => state.value)
+	const todos = useSelector((state) => state.todo.todos)
 	const completedTaskCount = todos.filter((todo) => todo.completed).length;
 
 	console.log(completedTaskCount);

@@ -6,10 +6,12 @@ import { configureStore } from "@reduxjs/toolkit";
 
 const store = configureStore({
     reducer: {
-        value: todoReducer
+        todo: todoReducer
+        
         
     }
 })
 
 
 export default store
+

@@ -1,63 +1,73 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { Delete, Edit, ToggleCompleted } from '../Redux/todoReducer';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Delete, ToggleCompleted, startEditing, saveEditing, updateEditedText } from '../Redux/todoReducer';
 
 const TodoItem = ({ id, title, completed }) => {
-
-  
   const inputRef = useRef(null);
   const dispatch = useDispatch();
-  const [edit, setEdit] = useState(''); 
-  const [editingTodoId, setEditingTodoId] = useState(null);
- 
+
+  const isEditing = useSelector((state) => state.todo.isEditing === id); 
+
+  const editedText = useSelector((state) => state.todo.editedText); 
+
+  const todos = useSelector((state) => state.todo.todos); 
+
   const handlDelet = (id) => {
     dispatch(Delete(id));
   };
 
   const handlEdit = (id) => {
-    setEditingTodoId(id); // Activate editing for this task
-    setEdit(title); // Set the input field value to the current task title
-  };
-
-  const handlSaveEdit = (id, text) => {
-    dispatch(Edit({ id, text })); // Update the task with the edited text
-    setEditingTodoId(null);
-    setEdit('');
     
+    console.log("edit clicked");
+    dispatch(startEditing(id));
+
+    const todo = todos.find((todo) => todo.id === id);
+    if (todo) {
+      dispatch(updateEditedText(todo.text)); 
+    }
   };
+
+  const handlSaveEdit = () => {
+   
+    dispatch(saveEditing({ id, text: editedText }));
+  };
+
   const handlCheckbox = () => {
-    console.log("chek box clicked");
-	dispatch(ToggleCompleted(id))
+    dispatch(ToggleCompleted(id));
+  };
+  
 
-  } 
-
-  useEffect(()=> {
-	if(editingTodoId !== null && inputRef.current){
-		inputRef.current.focus()
-	}
-  },[editingTodoId])
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
 
   return (
     <li className={`list-group-item ${completed && 'list-group-item-success'}`}>
       <div className='d-flex justify-content-between'>
         <span className='d-flex align-items-center'>
-          <input type='checkbox' className='mr-3' checked={completed} onClick={ handlCheckbox}></input>
-          {editingTodoId === id ? (
-			<>
-
-			
+          <input
+            type='checkbox'
+            className='mr-3'
+            checked={completed}
+            onClick={handlCheckbox}
+          ></input>
+          {isEditing ? (
             <input
-              style={{ border: 'none',outline:'none' }}
+              style={{ border: 'none', outline: 'none' }}
               type='text'
-              value={edit}
-              onChange={(e) => setEdit(e.target.value)}
+              value={editedText}
+              onChange={(e) => dispatch(updateEditedText(e.target.value))}
+              
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  handlSaveEdit(id, edit);
-                }}}
-              ref={inputRef} // Set the ref attribute to inputRef
+                  handlSaveEdit();
+                }
+              }}
+              onBlur={handlSaveEdit}
+              ref={inputRef}
             />
-			</>
           ) : (
             title
           )}
@@ -66,13 +76,23 @@ const TodoItem = ({ id, title, completed }) => {
           <button className='btn btn-danger ' onClick={() => handlDelet(id)}>
             Delete
           </button>
-          <button
-            className='btn btn-primary '
-            style={{ marginLeft: 3 }}
-            onClick={() => handlEdit(id)}
-          >
-            Edit
-          </button>
+          {isEditing ? (
+            <button
+              className='btn btn-primary '
+              style={{ marginLeft: 3 }}
+              onClick={handlSaveEdit}
+            >
+              Save
+            </button>
+          ) : (
+            <button
+              className='btn btn-primary '
+              style={{ marginLeft: 3 }}
+              onClick={() => handlEdit(id)}
+            >
+              Edit
+            </button>
+          )}
         </div>
       </div>
     </li>

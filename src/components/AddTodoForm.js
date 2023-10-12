@@ -9,9 +9,9 @@ const AddTodoForm = () => {
  
 
 	const onSubmit = (event) => {
-		event.preventDefault();
+		event.preventDefault(); 
 		if (!value.trim()) {
-			// Prevent adding an empty task
+			// when input feild emty
 			alert('Please enter a task before submitting.')
 			return;
 		  }
